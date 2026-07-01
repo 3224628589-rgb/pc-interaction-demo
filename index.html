@@ -1,0 +1,1712 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>线上铺货</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --line: #dfe5ee;
+      --muted-line: #edf1f5;
+      --text: #172033;
+      --muted: #657286;
+      --soft: #f8fafc;
+      --blue: #1677ff;
+      --blue-strong: #0f63d8;
+      --blue-soft: #eaf3ff;
+      --green: #1f9d64;
+      --green-soft: #e9f8f0;
+      --amber: #b56a00;
+      --amber-soft: #fff4df;
+      --red: #d92d20;
+      --red-soft: #fff0ee;
+      --slate: #0f172a;
+      --radius: 8px;
+      --shadow: 0 12px 34px rgba(15, 23, 42, .18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+      min-width: 1180px;
+    }
+
+    .main {
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(460px, 2fr) minmax(280px, 1fr);
+      gap: 12px;
+      min-height: 0;
+      flex: 1;
+      padding: 12px;
+    }
+
+    .panel {
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 48px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 760;
+    }
+
+    .panel-sub {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: #b9c7d8;
+    }
+
+    .btn.primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn.primary:hover {
+      background: var(--blue-strong);
+    }
+
+    .btn.danger {
+      border-color: #ffb4ad;
+      background: #ffffff;
+      color: var(--red);
+    }
+
+    .btn.ghost {
+      border-color: transparent;
+      background: transparent;
+      color: var(--blue);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: .54;
+    }
+
+    .icon-btn {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #ffffff;
+      color: var(--muted);
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .search {
+      position: relative;
+      padding: 10px 12px 8px;
+    }
+
+    .search .icon {
+      position: absolute;
+      top: 21px;
+      left: 24px;
+      color: #9aa7b8;
+    }
+
+    .search input {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px 0 36px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      outline: none;
+      background: #f7f9fb;
+      color: var(--text);
+    }
+
+    .search input:focus {
+      border-color: var(--blue);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(22, 119, 255, .12);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 0 12px 8px;
+    }
+
+    .tab {
+      min-height: 36px;
+      border-radius: 7px;
+      background: #f4f6f8;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: var(--blue-soft);
+      color: var(--blue);
+      box-shadow: inset 0 0 0 1px rgba(22, 119, 255, .22);
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 0 12px 10px;
+      border-bottom: 1px solid var(--muted-line);
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 30px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .filter-btn.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .queue {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 8px;
+    }
+
+    .queue-item {
+      display: grid;
+      gap: 6px;
+      width: 100%;
+      min-height: 92px;
+      margin-bottom: 8px;
+      padding: 10px;
+      text-align: left;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px #eef2f7;
+    }
+
+    .queue-item:hover {
+      border-color: #c8d6e8;
+    }
+
+    .queue-item.active {
+      border-color: var(--blue);
+      background: #f7fbff;
+      box-shadow: inset 3px 0 0 var(--blue);
+    }
+
+    .queue-compare {
+      display: grid;
+      gap: 8px;
+    }
+
+    .queue-compare-row {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      align-items: center;
+      gap: 9px;
+    }
+
+    .queue-label-block {
+      display: grid;
+      place-items: center;
+      min-height: 54px;
+      border-radius: 7px;
+      color: #ffffff;
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: center;
+      background: var(--blue);
+    }
+
+    .queue-label-block.takeout {
+      background: #f4a600;
+    }
+
+    .item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .code {
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .item-name {
+      overflow: hidden;
+      color: var(--text);
+      font-weight: 760;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .item-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .tags {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: #506073;
+      font-size: 12px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .tag.blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .tag.green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .tag.amber {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .tag.red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .detail-scroll,
+    .candidate-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .detail-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 56px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--muted-line);
+    }
+
+    .detail-main-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.32;
+    }
+
+    .sequence {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .detail-code {
+      display: grid;
+      justify-items: end;
+      gap: 4px;
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .detail-code strong {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .barcode-card {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      width: calc(100% - 32px);
+      margin: 14px 16px 8px;
+      padding: 10px 12px;
+      border: 1px solid #b8d7ff;
+      border-radius: 8px;
+      background: #f3f8ff;
+      text-align: left;
+      color: var(--text);
+    }
+
+    .barcode-label {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font-weight: 780;
+      text-align: left;
+    }
+
+    .barcode-card input {
+      width: 100%;
+      min-width: 0;
+      height: 34px;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 20px;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .hint-line {
+      padding: 0 16px 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hint-line button {
+      padding: 0;
+      background: transparent;
+      color: var(--blue);
+      font-weight: 750;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 1px;
+      margin: 0 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--line);
+    }
+
+    .field {
+      display: grid;
+      grid-template-columns: 108px minmax(0, 1fr);
+      align-items: center;
+      min-height: 46px;
+      background: #ffffff;
+    }
+
+    .field label {
+      padding-left: 12px;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .field.required label::before {
+      content: "*";
+      margin-right: 2px;
+      color: var(--red);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-width: 0;
+      height: 44px;
+      border: 0;
+      outline: none;
+      padding: 0 12px;
+      background: transparent;
+      color: var(--text);
+      font-weight: 650;
+    }
+
+    .reset-row {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 16px 12px;
+    }
+
+    .action-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .action-left,
+    .action-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .candidate-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+      min-height: 156px;
+      gap: 12px;
+      padding: 12px;
+      border-bottom: 1px solid var(--muted-line);
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    .candidate-card.current {
+      background: #f7fbff;
+      box-shadow: inset 3px 0 0 var(--blue);
+    }
+
+    .product-art {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      overflow: hidden;
+      border: 1px solid #d8e0ea;
+      border-radius: 8px;
+      background: #f97316;
+    }
+
+    .product-art.blue-art {
+      background: #2563eb;
+    }
+
+    .product-art.green-art {
+      background: #16a34a;
+    }
+
+    .product-art::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 14px;
+      height: 34px;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .product-art::after {
+      content: "";
+      position: absolute;
+      left: 19px;
+      right: 19px;
+      bottom: 13px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .candidate-card > .product-art {
+      width: 100%;
+      height: auto;
+      min-height: 132px;
+      aspect-ratio: 1 / 1;
+    }
+
+    .candidate-body {
+      display: flex;
+      min-height: 132px;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .candidate-name {
+      margin: 0 0 5px;
+      font-weight: 790;
+      line-height: 1.32;
+    }
+
+    .candidate-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .compare {
+      margin: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px;
+      border-bottom: 1px solid var(--muted-line);
+    }
+
+    .compare-row:last-child {
+      border-bottom: 0;
+    }
+
+    .label-block {
+      display: grid;
+      place-items: center;
+      min-height: 62px;
+      border-radius: 7px;
+      color: #ffffff;
+      font-weight: 800;
+      text-align: center;
+      background: var(--blue);
+    }
+
+    .label-block.takeout {
+      background: #f4a600;
+    }
+
+    .diff {
+      color: var(--red);
+      font-weight: 780;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 220px;
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .drawer-backdrop,
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background: rgba(15, 23, 42, .46);
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      width: 430px;
+      max-width: calc(100vw - 120px);
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .drawer-header,
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 56px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .drawer-body {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 16px 18px;
+    }
+
+    .guide-callout {
+      padding: 12px;
+      border: 1px solid #cfe3ff;
+      border-radius: 8px;
+      background: #f3f8ff;
+      color: #0f4f9f;
+      font-weight: 650;
+    }
+
+    .input-row {
+      display: grid;
+      gap: 7px;
+      margin-top: 16px;
+    }
+
+    .input-row label {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .input-row input {
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      outline: none;
+    }
+
+    .input-row input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(22, 119, 255, .12);
+    }
+
+    .error-text {
+      min-height: 18px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .drawer-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .modal-backdrop {
+      display: grid;
+      place-items: center;
+      z-index: 50;
+    }
+
+    .dialog {
+      width: 430px;
+      max-width: calc(100vw - 40px);
+      overflow: hidden;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .dialog-body {
+      padding: 16px 18px;
+    }
+
+    .dialog-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 820;
+    }
+
+    .dialog-copy {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .dialog-art {
+      display: grid;
+      grid-template-columns: 108px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      margin: 12px 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .dialog-art .product-art {
+      width: 108px;
+      height: 108px;
+    }
+
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 18px 16px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 70;
+      min-width: 260px;
+      max-width: 420px;
+      padding: 12px 14px;
+      border: 1px solid #bad7ff;
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-weight: 690;
+    }
+
+    @media (max-width: 1320px) {
+      .app {
+        min-width: 1180px;
+      }
+
+      .workspace {
+        grid-template-columns: minmax(280px, 1fr) minmax(460px, 2fr) minmax(280px, 1fr);
+        gap: 10px;
+        padding: 10px;
+      }
+
+      .panel-header {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .detail-main-title {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <main class="main">
+      <section class="workspace">
+        <aside class="panel" aria-label="线上铺货列表">
+          <div class="panel-header">
+            <h2 class="panel-title">线上铺货</h2>
+            <button class="btn ghost" type="button" onclick="runSync()">同步商品并匹配</button>
+          </div>
+          <div class="search">
+            <svg class="icon" viewBox="0 0 24 24"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
+            <input id="searchInput" type="search" placeholder="商品编码/名称/厂家/条码" oninput="setKeyword(this.value)" />
+          </div>
+          <div class="tabs">
+            <button id="tabUnmatched" class="tab" type="button" onclick="setMode('unmatched')">未匹配（不可上架）15</button>
+            <button id="tabMatched" class="tab" type="button" onclick="setMode('matched')">已匹配（可上架）121</button>
+          </div>
+          <div id="filters" class="filters"></div>
+          <div id="queueList" class="queue"></div>
+        </aside>
+
+        <section class="panel" aria-label="商品详情">
+          <div id="detailPanel" class="detail-scroll"></div>
+          <div id="detailActions" class="action-strip"></div>
+        </section>
+
+        <aside class="panel" aria-label="外卖候选">
+          <div id="candidateHeader" class="panel-header"></div>
+          <div id="candidatePanel" class="candidate-scroll"></div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div id="drawerRoot"></div>
+  <div id="modalRoot"></div>
+  <div id="toastRoot"></div>
+
+  <script>
+    const unmatchedProducts = [
+      {
+        id: "u1",
+        productCode: "80000001",
+        name: "达因 伊可新 维生素AD滴剂",
+        barcode: "1",
+        brand: "达因",
+        spec: "50g",
+        approvalNo: "国药准字H20010011",
+        manufacturer: "天津达仁堂京万红药业有限公司",
+        category: "处方药",
+        autoLabel: "urgent",
+        recent: true,
+        drug: true,
+        collected: false,
+        stock: true,
+        candidates: [
+          { id: "c1", name: "达因 维生素AD滴剂 50g/袋", upc: "6982000822881", approvalNo: "国药准字H20010011", manufacturer: "天津达仁堂京万红药业有限公司", category: "处方药", confidence: "high", duplicate: true, art: "orange" },
+          { id: "c2", name: "达因 维生素AD滴剂 30粒", upc: "6974866240105", approvalNo: "国药准字H20023370", manufacturer: "成都制药有限公司", category: "处方药", confidence: "low", duplicate: false, art: "blue" }
+        ]
+      },
+      {
+        id: "u2",
+        productCode: "80009762",
+        name: "乐赛仙 诺氟沙星胶囊",
+        barcode: "693278327287",
+        brand: "乐赛仙",
+        spec: "10粒/板*2板/盒",
+        approvalNo: "国药准字H42022711",
+        manufacturer: "湖北睿泽药业有限公司",
+        category: "非处方药",
+        autoLabel: "urgent",
+        recent: false,
+        drug: true,
+        collected: true,
+        stock: true,
+        candidates: [
+          { id: "c3", name: "诺氟沙星胶囊 10粒/盒", upc: "69719811201", approvalNo: "国药准字H42022711", manufacturer: "湖北睿泽药业有限公司", category: "非处方药", confidence: "medium", duplicate: false, art: "green" }
+        ]
+      },
+      {
+        id: "u3",
+        productCode: "80008324",
+        name: "维生素B2片（澳善维）",
+        barcode: "6928975001089",
+        brand: "澳善维",
+        spec: "5mg*30片*3板",
+        approvalNo: "国药准字H61020683",
+        manufacturer: "陕西颐生堂药业有限公司",
+        category: "非处方药",
+        autoLabel: "ignore",
+        recent: true,
+        drug: true,
+        collected: false,
+        stock: true,
+        candidates: []
+      },
+      {
+        id: "u4",
+        productCode: "80009398",
+        name: "小儿复方氨酚烷胺片（乐赛仙）",
+        barcode: "6920945600438",
+        brand: "乐赛仙",
+        spec: "6片*3板",
+        approvalNo: "国药准字H43021998",
+        manufacturer: "湖南明瑞制药有限公司",
+        category: "非处方药",
+        autoLabel: "ignore",
+        recent: false,
+        drug: true,
+        collected: false,
+        stock: false,
+        candidates: [
+          { id: "c4", name: "小儿复方氨酚烷胺片 18片", upc: "6920945600438", approvalNo: "国药准字H43021998", manufacturer: "湖南明瑞制药有限公司", category: "非处方药", confidence: "high", duplicate: false, art: "orange" }
+        ]
+      }
+    ];
+
+    const matchedProducts = [
+      {
+        id: "m1",
+        productCode: "10005559",
+        name: "氯雷他定片（百为乐）10mg*6片",
+        barcode: "6939051800069",
+        brand: "百为乐",
+        spec: "10mg*6片",
+        approvalNo: "国药准字H20060402",
+        manufacturer: "万特制药（海南）有限公司",
+        category: "处方药",
+        matchedConfidence: "low",
+        current: { id: "mc1", name: "百为乐 氯雷他定片 10mg*6片", upc: "6939051800069", approvalNo: "国药准字H20060402", manufacturer: "万特制药（海南）有限公司", category: "甲类非处方", confidence: "low", duplicate: false, art: "blue" },
+        candidates: [
+          { id: "mc1", name: "百为乐 氯雷他定片 10mg*6片", upc: "6939051800069", approvalNo: "国药准字H20060402", manufacturer: "万特制药（海南）有限公司", category: "甲类非处方", confidence: "low", duplicate: false, art: "blue", current: true },
+          { id: "mc2", name: "氯雷他定片 10mg*6片", upc: "6939051800069", approvalNo: "国药准字H20060402", manufacturer: "万特制药（海南）有限公司", category: "处方药", confidence: "medium", duplicate: false, art: "green" }
+        ]
+      },
+      {
+        id: "m2",
+        productCode: "10010782",
+        name: "富马酸比索洛尔片（苏莱乐）5mg*18片",
+        barcode: "6950425900079",
+        brand: "苏莱乐",
+        spec: "5mg*18片",
+        approvalNo: "国药准字H20083008",
+        manufacturer: "成都苑东生物制药股份有限公司",
+        category: "处方药",
+        matchedConfidence: "high",
+        current: { id: "mc3", name: "苏莱乐 富马酸比索洛尔片 5mg*18片", upc: "6950425900079", approvalNo: "国药准字H20083008", manufacturer: "成都苑东生物制药股份有限公司", category: "处方药", confidence: "high", duplicate: false, art: "green" },
+        candidates: [
+          { id: "mc3", name: "苏莱乐 富马酸比索洛尔片 5mg*18片", upc: "6950425900079", approvalNo: "国药准字H20083008", manufacturer: "成都苑东生物制药股份有限公司", category: "处方药", confidence: "high", duplicate: false, art: "green", current: true }
+        ]
+      }
+    ];
+
+    const PRODUCT_FIELDS = ["barcode", "brand", "name", "spec", "approvalNo", "manufacturer", "category"];
+    const initialProductValues = new Map([...unmatchedProducts, ...matchedProducts].map(product => [
+      product.id,
+      Object.fromEntries(PRODUCT_FIELDS.map(key => [key, product[key]]))
+    ]));
+
+    const state = {
+      mode: "unmatched",
+      keyword: "",
+      filters: { urgent: true, recent: false, drug: false, collected: false },
+      selectedId: "u1",
+      guide: { open: false, value: "", error: "" },
+      modal: null,
+      toast: "",
+      unlinked: {}
+    };
+
+    const filterLabels = {
+      urgent: "尽快确认！",
+      recent: "近期入库",
+      drug: "只看药品",
+      collected: "已收录upc"
+    };
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function confidenceLabel(value) {
+      if (value === "high") return ["高置信度", "blue"];
+      if (value === "medium") return ["中置信度", "amber"];
+      return ["低置信度", ""];
+    }
+
+    function productDirty(product) {
+      const initial = initialProductValues.get(product.id);
+      if (!initial) return false;
+      return PRODUCT_FIELDS.some(key => String(product[key] ?? "") !== String(initial[key] ?? ""));
+    }
+
+    function resetProduct(product) {
+      const initial = initialProductValues.get(product.id);
+      if (!initial) return;
+      PRODUCT_FIELDS.forEach(key => {
+        product[key] = initial[key];
+      });
+      render();
+    }
+
+    function getProducts() {
+      return state.mode === "unmatched" ? unmatchedProducts : matchedProducts;
+    }
+
+    function getFilteredProducts() {
+      let list = [...getProducts()];
+      const keyword = state.keyword.trim().toLowerCase();
+      if (state.mode === "unmatched") {
+        if (state.filters.urgent) list = list.filter(item => item.autoLabel === "urgent");
+        if (state.filters.recent) list = list.filter(item => item.recent);
+        if (state.filters.drug) list = list.filter(item => item.drug);
+        if (state.filters.collected) list = list.filter(item => item.collected);
+      }
+      if (keyword) {
+        list = list.filter(item => [item.productCode, item.name, item.barcode, item.manufacturer, item.brand]
+          .some(value => String(value || "").toLowerCase().includes(keyword)));
+      }
+      return list;
+    }
+
+    function getSelected() {
+      return getProducts().find(item => item.id === state.selectedId) || getFilteredProducts()[0] || null;
+    }
+
+    function ensureSelection() {
+      const list = getFilteredProducts();
+      if (!list.length) {
+        state.selectedId = "";
+        return;
+      }
+      if (!list.some(item => item.id === state.selectedId)) {
+        state.selectedId = list[0].id;
+      }
+    }
+
+    function sequenceIndex() {
+      const list = getFilteredProducts();
+      return list.findIndex(item => item.id === state.selectedId);
+    }
+
+    function isLastInSequence() {
+      const list = getFilteredProducts();
+      const index = sequenceIndex();
+      return index >= 0 && index === list.length - 1;
+    }
+
+    function render() {
+      ensureSelection();
+      renderTabs();
+      renderFilters();
+      renderQueue();
+      renderDetail();
+      renderCandidates();
+      renderDrawer();
+      renderModal();
+      renderToast();
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput && searchInput.value !== state.keyword) searchInput.value = state.keyword;
+    }
+
+    function renderTabs() {
+      document.getElementById("tabUnmatched").classList.toggle("active", state.mode === "unmatched");
+      document.getElementById("tabMatched").classList.toggle("active", state.mode === "matched");
+    }
+
+    function renderFilters() {
+      const root = document.getElementById("filters");
+      if (state.mode !== "unmatched") {
+        root.innerHTML = "";
+        return;
+      }
+      root.innerHTML = Object.entries(filterLabels).map(([key, label]) => {
+        const active = state.filters[key] ? " active" : "";
+        const check = state.filters[key] ? '<svg class="icon" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>' : "";
+        return `<button class="filter-btn${active}" type="button" onclick="toggleFilter('${key}')">${check}${label}</button>`;
+      }).join("");
+    }
+
+    function renderQueue() {
+      const list = getFilteredProducts();
+      const selected = getSelected();
+
+      if (!list.length) {
+        document.getElementById("queueList").innerHTML = `
+          <div class="empty">
+            <div>
+              <strong>暂无数据</strong><br /><br />
+              <button class="btn" type="button" onclick="clearFilters()">清空筛选</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      document.getElementById("queueList").innerHTML = list.map(item => {
+        const active = selected && selected.id === item.id ? " active" : "";
+        if (state.mode === "matched") {
+          const current = state.unlinked[item.id] ? null : item.current;
+          return `
+            <button class="queue-item${active}" type="button" onclick="selectProduct('${item.id}')">
+              <div class="queue-compare">
+                <div class="queue-compare-row">
+                  <div class="queue-label-block">我的<br />商品</div>
+                  <div>
+                    <div class="code">${escapeHTML(item.productCode)}</div>
+                    <div class="item-name">${escapeHTML(item.name)}</div>
+                    <div class="item-meta">${escapeHTML(item.barcode)} / ${escapeHTML(item.approvalNo)} / ${escapeHTML(item.manufacturer)} / ${escapeHTML(item.category)}</div>
+                  </div>
+                </div>
+                <div class="queue-compare-row">
+                  <div class="queue-label-block takeout">外卖<br />商品</div>
+                  <div>
+                    <div class="item-name">${escapeHTML(current ? current.name : "-")}</div>
+                    <div class="item-meta">${escapeHTML(current ? current.upc : "-")} / ${escapeHTML(current ? current.approvalNo : "-")} / ${escapeHTML(current ? current.manufacturer : "-")} / <span class="${current && current.category !== item.category ? 'diff' : ''}">${escapeHTML(current ? current.category : "-")}</span></div>
+                  </div>
+                </div>
+              </div>
+            </button>`;
+        }
+        return `
+          <button class="queue-item${active}" type="button" onclick="selectProduct('${item.id}')">
+            <div class="item-top">
+              <span class="code">${escapeHTML(item.productCode)}</span>
+            </div>
+            <div class="item-name">${escapeHTML(item.name)}</div>
+            <div class="item-meta">${escapeHTML(item.spec)} / ${escapeHTML(item.manufacturer)} / ${escapeHTML(item.approvalNo)}</div>
+          </button>`;
+      }).join("");
+    }
+
+    function renderDetail() {
+      const product = getSelected();
+      if (!product) {
+        document.getElementById("detailPanel").innerHTML = '<div class="empty">请选择商品。</div>';
+        document.getElementById("detailActions").innerHTML = "";
+        return;
+      }
+
+      const resetHtml = productDirty(product)
+        ? resetButtonHtml()
+        : "";
+
+      document.getElementById("detailPanel").innerHTML = `
+        <div class="detail-hero">
+          <button class="btn ghost" type="button" onclick="saveDetail()">保存后返回</button>
+          <div class="detail-code">
+            <strong>当前商品:${escapeHTML(product.productCode)}</strong>
+          </div>
+        </div>
+        <div class="barcode-card">
+          <button class="barcode-label" type="button" onclick="openUpcGuide()">商品条码</button>
+          <input value="${escapeHTML(product.barcode)}" oninput="handleFieldInput('barcode', this.value)" />
+          <svg class="icon" viewBox="0 0 24 24"><path d="M4 7V4h3"/><path d="M17 4h3v3"/><path d="M20 17v3h-3"/><path d="M7 20H4v-3"/><path d="M8 12h8"/></svg>
+        </div>
+        <div class="hint-line">请填入美团后台可找到的upc，点击这里查看详细指南</div>
+        <div class="form-grid">
+          ${fieldHtml("brand", "品牌名称", product.brand, false)}
+          ${fieldHtml("name", "商品名称", product.name, true)}
+          ${fieldHtml("spec", "商品规格", product.spec, true)}
+          ${fieldHtml("approvalNo", "批准文号", product.approvalNo, true)}
+          ${fieldHtml("manufacturer", "生产厂家", product.manufacturer, true)}
+          <div class="field">
+            <label for="categorySelect">处方分类</label>
+            <select id="categorySelect" onchange="updateField('category', this.value)">
+              ${["处方药", "非处方药", "甲类非处方", "乙类非处方", "其他"].map(value => `<option value="${value}" ${product.category === value ? "selected" : ""}>${value}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <div id="resetRow">${resetHtml}</div>`;
+
+      renderDetailActions(product);
+    }
+
+    function fieldHtml(key, label, value, required) {
+      return `
+        <div class="field${required ? " required" : ""}">
+          <label>${label}</label>
+          <input value="${escapeHTML(value)}" oninput="handleFieldInput('${key}', this.value)" />
+        </div>`;
+    }
+
+    function resetButtonHtml() {
+      return '<div class="reset-row"><button class="btn" type="button" onclick="resetSelectedProduct()">重置为初始商品资料</button></div>';
+    }
+
+    function renderDetailActions(product) {
+      document.getElementById("detailActions").innerHTML = `
+        <div class="action-left"></div>
+        <div class="action-right">
+          <button class="btn primary" type="button" onclick="rematchSelected()">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M19 12a7 7 0 0 0-11.9-5"/><path d="M5 12a7 7 0 0 0 11.9 5"/></svg>
+            已补充，重新匹配外卖商品
+          </button>
+        </div>`;
+    }
+
+    function renderCandidates() {
+      const product = getSelected();
+      const header = document.getElementById("candidateHeader");
+      const panel = document.getElementById("candidatePanel");
+      if (!product) {
+        header.innerHTML = '<h2 class="panel-title">点击卡片与外卖商品建联</h2>';
+        panel.innerHTML = '<div class="empty">暂无商品。</div>';
+        return;
+      }
+
+      const skipAction = state.mode === "unmatched" && !isLastInSequence()
+        ? '<button class="btn ghost" type="button" onclick="skipNext()">找不到，先看下一条</button>'
+        : "";
+      const unlinkAction = state.mode === "matched" && !state.unlinked[product.id]
+        ? '<button class="btn ghost" type="button" onclick="openUnlinkConfirm()">解除当前关联</button>'
+        : "";
+      header.innerHTML = `
+        <h2 class="panel-title">点击卡片与外卖商品建联</h2>
+        ${skipAction || unlinkAction}`;
+
+      if (!product.candidates.length) {
+        panel.innerHTML = `
+          <div class="empty">
+            <div>
+              <strong>暂无候选商品</strong>
+            </div>
+          </div>`;
+        return;
+      }
+
+      panel.innerHTML = product.candidates.map(candidate => candidateHtml(candidate)).join("");
+    }
+
+    function candidateHtml(candidate) {
+      const [label, cls] = confidenceLabel(candidate.confidence);
+      const artClass = candidate.art === "blue" ? " blue-art" : candidate.art === "green" ? " green-art" : "";
+      return `
+        <div class="candidate-card${candidate.current ? " current" : ""}" onclick="openCandidate('${candidate.id}')">
+          <div class="product-art${artClass}" aria-hidden="true"></div>
+          <div class="candidate-body">
+            <div class="tags">
+              ${candidate.current ? '<span class="tag blue">当前关联</span>' : ''}
+              <span class="tag ${cls}">${label}</span>
+              ${candidate.duplicate ? '<span class="tag amber">疑似重复</span>' : ''}
+            </div>
+            <p class="candidate-name">${escapeHTML(candidate.name)}</p>
+            <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
+          </div>
+        </div>`;
+    }
+
+    function renderDrawer() {
+      const root = document.getElementById("drawerRoot");
+      if (!state.guide.open) {
+        root.innerHTML = "";
+        return;
+      }
+      root.innerHTML = `
+        <div class="drawer-backdrop" onclick="closeGuide()"></div>
+        <aside class="drawer" aria-label="补充美团UPC">
+          <div class="drawer-header">
+            <h2 class="panel-title">补充美团UPC</h2>
+            <button class="icon-btn" type="button" title="关闭" onclick="closeGuide()">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+          <div class="drawer-body">
+            <div class="guide-callout">您可以主动在美团商家后台找到美团UPC，并且填回到商品条码，点击重新匹配后，我们将为你直接关联上此美团商品</div>
+            <div class="input-row">
+              <label for="upcInput">美团UPC</label>
+              <input id="upcInput" value="${escapeHTML(state.guide.value)}" inputmode="numeric" placeholder="请输入 6-15 位纯数字" oninput="state.guide.value=this.value; state.guide.error=''; document.getElementById('upcError').textContent='';" />
+              <div id="upcError" class="error-text">${escapeHTML(state.guide.error)}</div>
+            </div>
+          </div>
+          <div class="drawer-footer">
+            <button class="btn" type="button" onclick="closeGuide()">我知道了</button>
+            <button class="btn primary" type="button" onclick="submitUpc()">已补充，重新匹配</button>
+          </div>
+        </aside>`;
+      window.requestAnimationFrame(() => {
+        const input = document.getElementById("upcInput");
+        if (input) input.focus();
+      });
+    }
+
+    function renderModal() {
+      const root = document.getElementById("modalRoot");
+      if (!state.modal) {
+        root.innerHTML = "";
+        return;
+      }
+      if (state.modal.type === "success") {
+        const candidate = state.modal.candidate;
+        const [label, cls] = confidenceLabel(candidate.confidence);
+        const primaryText = isLastInSequence() ? "确定关联" : "没问题，下一条";
+        root.innerHTML = `
+          <div class="modal-backdrop">
+            <section class="dialog" role="dialog" aria-modal="true">
+              <div class="dialog-header">
+                <h2 class="dialog-title">匹配成功！</h2>
+                <button class="icon-btn" type="button" title="关闭" onclick="closeModal()">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <div class="dialog-body">
+                <p class="dialog-copy">为您找到一条${label}外卖商品。</p>
+                <div class="dialog-art">
+                  <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
+                  <div>
+                    <div class="tags"><span class="tag ${cls}">${label}</span>${candidate.duplicate ? '<span class="tag amber">疑似重复</span>' : ''}</div>
+                    <p class="candidate-name">${escapeHTML(candidate.name)}</p>
+                    <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="dialog-footer">
+                <button class="btn" type="button" onclick="closeModal()">我再看看</button>
+                <button class="btn primary" type="button" onclick="confirmMatch()">${primaryText}</button>
+              </div>
+            </section>
+          </div>`;
+        return;
+      }
+
+      if (state.modal.type === "comfort") {
+        root.innerHTML = `
+          <div class="modal-backdrop">
+            <section class="dialog" role="dialog" aria-modal="true">
+              <div class="dialog-header">
+                <h2 class="dialog-title">请稍后再试</h2>
+                <button class="icon-btn" type="button" title="关闭" onclick="closeModal()">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <div class="dialog-body">
+                <p class="dialog-copy">您的upc <strong style="color: var(--blue)">${escapeHTML(state.modal.upc)}</strong> 已被收录，您可以在【未匹配（不可上架）-已收录upc】中找到，核实确为有效美团标品upc后，我们将在1~5个工作日内为您自动关联并上架。</p>
+              </div>
+              <div class="dialog-footer">
+                <button class="btn primary" type="button" onclick="closeModal()">确定</button>
+              </div>
+            </section>
+          </div>`;
+        return;
+      }
+
+      if (state.modal.type === "current") {
+        const candidate = state.modal.candidate;
+        const [label, cls] = confidenceLabel(candidate.confidence);
+        root.innerHTML = `
+          <div class="modal-backdrop">
+            <section class="dialog" role="dialog" aria-modal="true">
+              <div class="dialog-header">
+                <h2 class="dialog-title">当前关联商品</h2>
+                <button class="icon-btn" type="button" title="关闭" onclick="closeModal()">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <div class="dialog-body">
+                <div class="dialog-art">
+                  <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
+                  <div>
+                    <div class="tags"><span class="tag blue">当前关联</span><span class="tag ${cls}">${label}</span></div>
+                    <p class="candidate-name">${escapeHTML(candidate.name)}</p>
+                    <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="dialog-footer">
+                <button class="btn primary" type="button" onclick="closeModal()">确定</button>
+              </div>
+            </section>
+          </div>`;
+        return;
+      }
+
+      if (state.modal.type === "rematch") {
+        const candidate = state.modal.candidate;
+        const [label, cls] = confidenceLabel(candidate.confidence);
+        const title = candidate.duplicate ? "重新匹配为重复商品" : "确定重新匹配？";
+        root.innerHTML = `
+          <div class="modal-backdrop">
+            <section class="dialog" role="dialog" aria-modal="true">
+              <div class="dialog-header">
+                <h2 class="dialog-title">${title}</h2>
+                <button class="icon-btn" type="button" title="关闭" onclick="closeModal()">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <div class="dialog-body">
+                <p class="dialog-copy">点击重新匹配，当前商品库存将转移到其他外卖商品，可能涉及到美团后台上下架，请谨慎操作！</p>
+                <div class="dialog-art">
+                  <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
+                  <div>
+                    <div class="tags"><span class="tag ${cls}">${label}</span>${candidate.duplicate ? '<span class="tag amber">疑似重复</span>' : ''}</div>
+                    <p class="candidate-name">${escapeHTML(candidate.name)}</p>
+                    <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="dialog-footer">
+                <button class="btn" type="button" onclick="closeModal()">我再看看</button>
+                <button class="btn primary" type="button" onclick="confirmRematch()">重新匹配</button>
+              </div>
+            </section>
+          </div>`;
+        return;
+      }
+
+      if (state.modal.type === "unlink") {
+        root.innerHTML = `
+          <div class="modal-backdrop">
+            <section class="dialog" role="dialog" aria-modal="true">
+              <div class="dialog-header">
+                <h2 class="dialog-title">确定解除标品关联关系？</h2>
+                <button class="icon-btn" type="button" title="关闭" onclick="closeModal()">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <div class="dialog-body">
+                <p class="dialog-copy">点击解除关联，当前商品库存将暂时从美团下架，请谨慎操作！</p>
+              </div>
+              <div class="dialog-footer">
+                <button class="btn" type="button" onclick="closeModal()">我再看看</button>
+                <button class="btn danger" type="button" onclick="confirmUnlink()">解除关联</button>
+              </div>
+            </section>
+          </div>`;
+      }
+    }
+
+    function renderToast() {
+      document.getElementById("toastRoot").innerHTML = "";
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      state.keyword = "";
+      state.selectedId = mode === "unmatched" ? "u1" : "m1";
+      state.modal = null;
+      render();
+    }
+
+    function setKeyword(value) {
+      state.keyword = value;
+      render();
+    }
+
+    function toggleFilter(key) {
+      state.filters[key] = !state.filters[key];
+      render();
+    }
+
+    function clearFilters() {
+      state.keyword = "";
+      state.filters = { urgent: false, recent: false, drug: false, collected: false };
+      render();
+    }
+
+    function selectProduct(id) {
+      state.selectedId = id;
+      state.modal = null;
+      state.guide.open = false;
+      render();
+    }
+
+    function updateField(key, value) {
+      const product = getSelected();
+      if (!product) return;
+      product[key] = value;
+      render();
+    }
+
+    function handleFieldInput(key, value) {
+      const product = getSelected();
+      if (!product) return;
+      product[key] = value;
+      const resetRow = document.getElementById("resetRow");
+      if (resetRow) {
+        resetRow.innerHTML = productDirty(product) ? resetButtonHtml() : "";
+      }
+    }
+
+    function resetSelectedProduct() {
+      const product = getSelected();
+      if (!product) return;
+      resetProduct(product);
+    }
+
+    function saveDetail() {
+      return;
+    }
+
+    function openUpcGuide() {
+      const product = getSelected();
+      if (!product) return;
+      state.guide = { open: true, value: product.barcode || "", error: "" };
+      render();
+    }
+
+    function closeGuide() {
+      state.guide.open = false;
+      render();
+    }
+
+    function validUpc(value) {
+      return /^[0-9]{6,15}$/.test(String(value || ""));
+    }
+
+    function submitUpc() {
+      const value = String(state.guide.value || "").trim();
+      if (!validUpc(value)) {
+        state.guide.error = "请输入合规upc";
+        render();
+        return;
+      }
+      const product = getSelected();
+      if (product) {
+        product.barcode = value;
+        if (value === "693278327287") product.collected = true;
+      }
+      state.guide.open = false;
+      if (value === "693278327287") {
+        state.modal = { type: "comfort", upc: value };
+      } else {
+        const candidate = product && product.candidates[0]
+          ? product.candidates[0]
+          : { id: "generated", name: `${product.name} 外卖标品`, upc: value, approvalNo: product.approvalNo, manufacturer: product.manufacturer, category: product.category, confidence: "high", duplicate: false, art: "green" };
+        state.modal = { type: "success", candidate };
+      }
+      render();
+    }
+
+    function rematchSelected() {
+      const product = getSelected();
+      if (!product) return;
+      if (!validUpc(product.barcode)) {
+        state.guide = { open: true, value: product.barcode || "", error: "请输入合规upc" };
+        render();
+        return;
+      }
+      if (product.collected || product.barcode === "693278327287") {
+        product.collected = true;
+        state.modal = { type: "comfort", upc: product.barcode };
+      } else {
+        const candidate = product.candidates.find(item => !item.current) || product.candidates[0] || { id: "generated", name: `${product.name} 外卖标品`, upc: product.barcode, approvalNo: product.approvalNo, manufacturer: product.manufacturer, category: product.category, confidence: "high", duplicate: false, art: "green" };
+        state.modal = { type: state.mode === "matched" ? "rematch" : "success", candidate };
+      }
+      render();
+    }
+
+    function openCandidate(candidateId) {
+      const product = getSelected();
+      if (!product) return;
+      const candidate = product.candidates.find(item => item.id === candidateId) || product.current;
+      if (state.mode === "matched") {
+        state.modal = { type: candidate.current ? "current" : "rematch", candidate };
+        render();
+        return;
+      }
+      state.modal = { type: "success", candidate };
+      render();
+    }
+
+    function closeModal() {
+      state.modal = null;
+      render();
+    }
+
+    function confirmMatch() {
+      const last = isLastInSequence();
+      state.modal = null;
+      if (!last) selectNextProduct();
+      render();
+    }
+
+    function confirmRematch() {
+      state.modal = null;
+      render();
+    }
+
+    function selectNextProduct() {
+      const list = getFilteredProducts();
+      const index = sequenceIndex();
+      if (index >= 0 && index < list.length - 1) {
+        state.selectedId = list[index + 1].id;
+      }
+    }
+
+    function skipNext() {
+      selectNextProduct();
+      render();
+    }
+
+    function openUnlinkConfirm() {
+      state.modal = { type: "unlink" };
+      render();
+    }
+
+    function confirmUnlink() {
+      const product = getSelected();
+      if (product) {
+        state.unlinked[product.id] = true;
+      }
+      state.modal = null;
+      render();
+    }
+
+    function runSync() {
+      return;
+    }
+
+    function showToast(message) {
+      state.toast = "";
+      renderToast();
+    }
+
+    render();
+  </script>
+</body>
+</html>
