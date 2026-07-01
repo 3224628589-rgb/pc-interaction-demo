@@ -9,7 +9,7 @@
 | Quick filter chips | New component needed: `FilterToggleChip` | New | 未提供 | on, off, disabled | 筛选标签是开关，不是 tab |
 | Product list | New component needed: `ProductMatchList` | New | 未提供 | unmatched-card, matched-compare-card, selected, empty | 已匹配列表卡片内展示我的商品/外卖商品蓝黄对照 |
 | Product detail form | Existing form/input/select if project has one | Modify | 未提供 | view, edit, dirty, reset, saving, validation-error | 商品条码字段可编辑；修改后显示重置按钮 |
-| Barcode / UPC action | New component needed: `BarcodeFieldWithGuide` | New | 未提供 | valid, invalid, guide-open | 仅点击「商品条码」label 打开 UPC 引导 |
+| Barcode / UPC action | New component needed: `BarcodeFieldWithGuide` | New | 未提供 | valid, invalid, guide-open | 仅点击「商品条码」label 或「点击这里查看详细指南」打开 UPC 引导 |
 | Candidate list | New component needed: `TakeoutCandidateList` | New | 未提供 | high-confidence, low-confidence, duplicate, current | 当前关联置顶，疑似重复明确标识 |
 | Result modal | Existing modal/dialog if available | Reuse | 未提供 | success, comfort, unlink-confirm | 不再使用旧匹配失败弹窗 |
 | UPC guide drawer | Existing drawer/modal if available | Reuse / new | 未提供 | open, invalid, submitting | PC 可用右侧抽屉，避免遮住候选集 |

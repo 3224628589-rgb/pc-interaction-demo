@@ -502,9 +502,12 @@
 
     .hint-line button {
       padding: 0;
+      border: 0;
       background: transparent;
       color: var(--blue);
+      font: inherit;
       font-weight: 750;
+      cursor: pointer;
     }
 
     .form-grid {
@@ -755,6 +758,19 @@
       font-weight: 650;
     }
 
+    .guide-steps {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .guide-image {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
     .input-row {
       display: grid;
       gap: 7px;
@@ -943,8 +959,8 @@
         collected: false,
         stock: true,
         candidates: [
-          { id: "c1", name: "达因 维生素AD滴剂 50g/袋", upc: "6982000822881", approvalNo: "国药准字H20010011", manufacturer: "天津达仁堂京万红药业有限公司", category: "处方药", confidence: "high", duplicate: true, art: "orange" },
-          { id: "c2", name: "达因 维生素AD滴剂 30粒", upc: "6974866240105", approvalNo: "国药准字H20023370", manufacturer: "成都制药有限公司", category: "处方药", confidence: "low", duplicate: false, art: "blue" }
+          { id: "c1", name: "达因 维生素AD滴剂 50g/袋", upc: "6982000822881", approvalNo: "国药准字H20010011", manufacturer: "天津达仁堂京万红药业有限公司", category: "处方药", confidence: "high", duplicate: true, duplicateProductCode: "80000002", art: "orange" },
+          { id: "c2", name: "达因 维生素AD滴剂 30粒", upc: "6974866240105", approvalNo: "国药准字H20023370", manufacturer: "成都制药有限公司", category: "处方药", confidence: "low", confidencePercent: "45%", duplicate: false, art: "blue" }
         ]
       },
       {
@@ -1074,10 +1090,17 @@
       }[char]));
     }
 
-    function confidenceLabel(value) {
-      if (value === "high") return ["高置信度", "blue"];
-      if (value === "medium") return ["中置信度", "amber"];
-      return ["低置信度", ""];
+    function confidenceLabel(candidate) {
+      if (candidate.duplicate) return ["疑似重复", "blue"];
+      if (candidate.current) return ["当前关联", "blue"];
+      if (candidate.confidence === "high") return ["高置信度", "blue"];
+      if (candidate.confidence === "medium") return ["中置信度", "amber"];
+      return [`低置信度${candidate.confidencePercent || ""}`, ""];
+    }
+
+    function candidateTagHtml(candidate) {
+      const [label, cls] = confidenceLabel(candidate);
+      return `<span class="tag ${cls}">${label}</span>`;
     }
 
     function productDirty(product) {
@@ -1248,7 +1271,7 @@
           <input value="${escapeHTML(product.barcode)}" oninput="handleFieldInput('barcode', this.value)" />
           <svg class="icon" viewBox="0 0 24 24"><path d="M4 7V4h3"/><path d="M17 4h3v3"/><path d="M20 17v3h-3"/><path d="M7 20H4v-3"/><path d="M8 12h8"/></svg>
         </div>
-        <div class="hint-line">请填入美团后台可找到的upc，点击这里查看详细指南</div>
+        <div class="hint-line">请填入美团后台可找到的upc，<button type="button" onclick="openUpcGuide()">点击这里查看详细指南</button></div>
         <div class="form-grid">
           ${fieldHtml("brand", "品牌名称", product.brand, false)}
           ${fieldHtml("name", "商品名称", product.name, true)}
@@ -1324,16 +1347,13 @@
     }
 
     function candidateHtml(candidate) {
-      const [label, cls] = confidenceLabel(candidate.confidence);
       const artClass = candidate.art === "blue" ? " blue-art" : candidate.art === "green" ? " green-art" : "";
       return `
         <div class="candidate-card${candidate.current ? " current" : ""}" onclick="openCandidate('${candidate.id}')">
           <div class="product-art${artClass}" aria-hidden="true"></div>
           <div class="candidate-body">
             <div class="tags">
-              ${candidate.current ? '<span class="tag blue">当前关联</span>' : ''}
-              <span class="tag ${cls}">${label}</span>
-              ${candidate.duplicate ? '<span class="tag amber">疑似重复</span>' : ''}
+              ${candidateTagHtml(candidate)}
             </div>
             <p class="candidate-name">${escapeHTML(candidate.name)}</p>
             <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
@@ -1358,6 +1378,10 @@
           </div>
           <div class="drawer-body">
             <div class="guide-callout">您可以主动在美团商家后台找到美团UPC，并且填回到商品条码，点击重新匹配后，我们将为你直接关联上此美团商品</div>
+            <div class="guide-steps">
+              <img class="guide-image" src="assets/upc-guide-1.png" alt="美团商品列表进入新建商品示意" />
+              <img class="guide-image" src="assets/upc-guide-2.png" alt="复制美团UPC示意" />
+            </div>
             <div class="input-row">
               <label for="upcInput">美团UPC</label>
               <input id="upcInput" value="${escapeHTML(state.guide.value)}" inputmode="numeric" placeholder="请输入 6-15 位纯数字" oninput="state.guide.value=this.value; state.guide.error=''; document.getElementById('upcError').textContent='';" />
@@ -1383,7 +1407,7 @@
       }
       if (state.modal.type === "success") {
         const candidate = state.modal.candidate;
-        const [label, cls] = confidenceLabel(candidate.confidence);
+        const [label] = confidenceLabel(candidate);
         const primaryText = isLastInSequence() ? "确定关联" : "没问题，下一条";
         root.innerHTML = `
           <div class="modal-backdrop">
@@ -1395,11 +1419,45 @@
                 </button>
               </div>
               <div class="dialog-body">
-                <p class="dialog-copy">为您找到一条${label}外卖商品。</p>
+                <p class="dialog-copy">为您找到一条${label}标品！</p>
                 <div class="dialog-art">
                   <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
                   <div>
-                    <div class="tags"><span class="tag ${cls}">${label}</span>${candidate.duplicate ? '<span class="tag amber">疑似重复</span>' : ''}</div>
+                    <div class="tags">${candidateTagHtml(candidate)}</div>
+                    <p class="candidate-name">${escapeHTML(candidate.name)}</p>
+                    <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="dialog-footer">
+                <button class="btn" type="button" onclick="closeModal()">我再看看</button>
+                <button class="btn primary" type="button" onclick="confirmMatch()">${primaryText}</button>
+              </div>
+            </section>
+          </div>`;
+        return;
+      }
+
+      if (state.modal.type === "confirmLink") {
+        const product = state.modal.product;
+        const candidate = state.modal.candidate;
+        const primaryText = isLastInSequence() ? "确定关联" : "没问题，下一条";
+        const duplicateCode = candidate.duplicateProductCode || "80000002";
+        root.innerHTML = `
+          <div class="modal-backdrop">
+            <section class="dialog" role="dialog" aria-modal="true">
+              <div class="dialog-header">
+                <h2 class="dialog-title">${candidate.duplicate ? "发现为重复商品" : "确认建联"}</h2>
+                <button class="icon-btn" type="button" title="关闭" onclick="closeModal()">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <div class="dialog-body">
+                ${candidate.duplicate ? `<p class="dialog-copy">当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong> 与 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong> 匹配了同一个公共库标品，点击【${primaryText}】将冻结当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong>，并将库存合并至 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong></p>` : ""}
+                <div class="dialog-art">
+                  <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
+                  <div>
+                    <div class="tags">${candidateTagHtml(candidate)}</div>
                     <p class="candidate-name">${escapeHTML(candidate.name)}</p>
                     <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
                   </div>
@@ -1437,12 +1495,11 @@
 
       if (state.modal.type === "current") {
         const candidate = state.modal.candidate;
-        const [label, cls] = confidenceLabel(candidate.confidence);
         root.innerHTML = `
           <div class="modal-backdrop">
             <section class="dialog" role="dialog" aria-modal="true">
               <div class="dialog-header">
-                <h2 class="dialog-title">当前关联商品</h2>
+                <h2 class="dialog-title">当前关联标品</h2>
                 <button class="icon-btn" type="button" title="关闭" onclick="closeModal()">
                   <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
@@ -1451,7 +1508,7 @@
                 <div class="dialog-art">
                   <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
                   <div>
-                    <div class="tags"><span class="tag blue">当前关联</span><span class="tag ${cls}">${label}</span></div>
+                    <div class="tags">${candidateTagHtml(candidate)}</div>
                     <p class="candidate-name">${escapeHTML(candidate.name)}</p>
                     <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
                   </div>
@@ -1466,9 +1523,10 @@
       }
 
       if (state.modal.type === "rematch") {
+        const product = getSelected();
         const candidate = state.modal.candidate;
-        const [label, cls] = confidenceLabel(candidate.confidence);
         const title = candidate.duplicate ? "重新匹配为重复商品" : "确定重新匹配？";
+        const duplicateCode = candidate.duplicateProductCode || "80000002";
         root.innerHTML = `
           <div class="modal-backdrop">
             <section class="dialog" role="dialog" aria-modal="true">
@@ -1479,19 +1537,19 @@
                 </button>
               </div>
               <div class="dialog-body">
-                <p class="dialog-copy">点击重新匹配，当前商品库存将转移到其他外卖商品，可能涉及到美团后台上下架，请谨慎操作！</p>
+                <p class="dialog-copy">${candidate.duplicate && product ? `1. 当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong> 与 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong> 匹配了同一个公共库标品，点击重新匹配将冻结当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong>，并将库存合并至 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong><br />2. ` : ""}点击重新匹配，当前商品库存将转移到其他公共库标品，可能涉及到美团后台上下架，请谨慎操作！</p>
                 <div class="dialog-art">
                   <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
                   <div>
-                    <div class="tags"><span class="tag ${cls}">${label}</span>${candidate.duplicate ? '<span class="tag amber">疑似重复</span>' : ''}</div>
+                    <div class="tags">${candidateTagHtml(candidate)}</div>
                     <p class="candidate-name">${escapeHTML(candidate.name)}</p>
                     <div class="candidate-meta">${escapeHTML(candidate.upc)} / ${escapeHTML(candidate.approvalNo)} / ${escapeHTML(candidate.manufacturer)} / ${escapeHTML(candidate.category)}</div>
                   </div>
                 </div>
               </div>
               <div class="dialog-footer">
-                <button class="btn" type="button" onclick="closeModal()">我再看看</button>
-                <button class="btn primary" type="button" onclick="confirmRematch()">重新匹配</button>
+                <button class="btn" type="button" onclick="confirmRematch()">重新匹配</button>
+                <button class="btn primary" type="button" onclick="closeModal()">我再看看</button>
               </div>
             </section>
           </div>`;
@@ -1649,7 +1707,7 @@
         render();
         return;
       }
-      state.modal = { type: "success", candidate };
+      state.modal = { type: "confirmLink", product, candidate };
       render();
     }
 
