@@ -91,6 +91,16 @@
       gap: 8px;
     }
 
+    .panel-header .top-actions {
+      gap: 2px;
+    }
+
+    .panel-header .top-actions .btn {
+      min-height: 30px;
+      padding: 0 6px;
+      font-size: 12px;
+    }
+
     .workspace {
       display: grid;
       grid-template-columns: minmax(280px, 1fr) minmax(460px, 2fr) minmax(280px, 1fr);
@@ -231,7 +241,7 @@
 
     .tabs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 6px;
       padding: 0 12px 8px;
     }
@@ -250,6 +260,17 @@
       background: var(--blue-soft);
       color: var(--blue);
       box-shadow: inset 0 0 0 1px rgba(22, 119, 255, .22);
+    }
+
+    .status-hint {
+      margin: 0 12px 8px;
+      padding: 7px 9px;
+      border-radius: 6px;
+      background: #e3f2ff;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
     }
 
     .filters {
@@ -312,6 +333,11 @@
       box-shadow: inset 3px 0 0 var(--blue);
     }
 
+    .queue-item.paired {
+      min-height: 182px;
+      cursor: pointer;
+    }
+
     .queue-compare {
       display: grid;
       gap: 8px;
@@ -338,6 +364,67 @@
 
     .queue-label-block.takeout {
       background: #f4a600;
+    }
+
+    .queue-pair-name {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+      margin-bottom: 3px;
+    }
+
+    .queue-pair-name .item-name {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sync-row,
+    .list-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sync-row {
+      padding-top: 4px;
+      border-top: 1px solid var(--muted-line);
+    }
+
+    .sync-choice {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sync-choice::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border: 2px solid #b7c1ce;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .sync-choice.active {
+      color: var(--blue);
+    }
+
+    .sync-choice.active::before {
+      border: 5px solid var(--blue);
+    }
+
+    .list-actions {
+      min-height: 52px;
+      padding: 8px 10px;
+      border-top: 1px solid var(--line);
+      background: #ffffff;
     }
 
     .item-top {
@@ -881,6 +968,93 @@
       font-weight: 690;
     }
 
+    .disclaimer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 30px;
+      padding: 0 14px;
+      border-top: 1px solid var(--line);
+      background: #ffffff;
+      color: #8a95a5;
+      font-size: 12px;
+    }
+
+    .disclaimer-link {
+      padding: 0;
+      background: transparent;
+      color: var(--blue);
+      font-size: 12px;
+    }
+
+    .agreement-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      background: rgba(15, 23, 42, .62);
+    }
+
+    .agreement-dialog {
+      width: 460px;
+      max-width: calc(100vw - 40px);
+      overflow: hidden;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .agreement-copy {
+      min-height: 126px;
+      padding: 20px;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
+    .agreement-dialog .dialog-footer .btn {
+      flex: 1;
+    }
+
+    .tutorial-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(15, 23, 42, .66);
+    }
+
+    .tutorial-focus {
+      position: relative;
+      z-index: 82;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--blue);
+    }
+
+    .tutorial-card {
+      position: fixed;
+      left: 50%;
+      bottom: 48px;
+      z-index: 84;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: min(620px, calc(100vw - 40px));
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      transform: translateX(-50%);
+    }
+
+    .tutorial-copy {
+      flex: 1;
+      margin: 0;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
     @media (max-width: 1320px) {
       .app {
         min-width: 1180px;
@@ -910,18 +1084,24 @@
         <aside class="panel" aria-label="线上铺货列表">
           <div class="panel-header">
             <h2 class="panel-title">线上铺货</h2>
-            <button class="btn ghost" type="button" onclick="runSync()">同步商品并匹配</button>
+            <div class="top-actions">
+              <button id="tutorialButton" class="btn ghost" type="button" onclick="toggleTutorial()">查看教程</button>
+              <button class="btn ghost" type="button" onclick="runSync()">同步新入库商品</button>
+            </div>
           </div>
           <div class="search">
             <svg class="icon" viewBox="0 0 24 24"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
             <input id="searchInput" type="search" placeholder="商品编码/名称/厂家/条码" oninput="setKeyword(this.value)" />
           </div>
           <div class="tabs">
-            <button id="tabUnmatched" class="tab" type="button" onclick="setMode('unmatched')">未匹配（不可上架）15</button>
-            <button id="tabMatched" class="tab" type="button" onclick="setMode('matched')">已匹配（可上架）121</button>
+            <button id="tabUnmatched" class="tab" type="button" onclick="setMode('unmatched')"></button>
+            <button id="tabPending" class="tab" type="button" onclick="setMode('pending')"></button>
+            <button id="tabSynced" class="tab" type="button" onclick="setMode('synced')"></button>
           </div>
+          <div id="statusHint" class="status-hint"></div>
           <div id="filters" class="filters"></div>
           <div id="queueList" class="queue"></div>
+          <div id="listActions"></div>
         </aside>
 
         <section class="panel" aria-label="商品详情">
@@ -934,11 +1114,17 @@
           <div id="candidatePanel" class="candidate-scroll"></div>
         </aside>
       </section>
+      <footer class="disclaimer-bar">
+        <span>韶关市粤北康健有限公司</span>
+        <button class="disclaimer-link" type="button" onclick="openDisclaimer()">您已接受免责声明，点击查看</button>
+      </footer>
     </main>
   </div>
 
   <div id="drawerRoot"></div>
   <div id="modalRoot"></div>
+  <div id="tutorialRoot"></div>
+  <div id="agreementRoot"></div>
   <div id="toastRoot"></div>
 
   <script>
@@ -949,6 +1135,7 @@
         name: "达因 伊可新 维生素AD滴剂",
         barcode: "1",
         brand: "达因",
+        genericName: "维生素AD滴剂",
         spec: "50g",
         approvalNo: "国药准字H20010011",
         manufacturer: "天津达仁堂京万红药业有限公司",
@@ -969,6 +1156,7 @@
         name: "乐赛仙 诺氟沙星胶囊",
         barcode: "693278327287",
         brand: "乐赛仙",
+        genericName: "诺氟沙星胶囊",
         spec: "10粒/板*2板/盒",
         approvalNo: "国药准字H42022711",
         manufacturer: "湖北睿泽药业有限公司",
@@ -988,6 +1176,7 @@
         name: "维生素B2片（澳善维）",
         barcode: "6928975001089",
         brand: "澳善维",
+        genericName: "维生素B2片",
         spec: "5mg*30片*3板",
         approvalNo: "国药准字H61020683",
         manufacturer: "陕西颐生堂药业有限公司",
@@ -1005,6 +1194,7 @@
         name: "小儿复方氨酚烷胺片（乐赛仙）",
         barcode: "6920945600438",
         brand: "乐赛仙",
+        genericName: "小儿复方氨酚烷胺片",
         spec: "6片*3板",
         approvalNo: "国药准字H43021998",
         manufacturer: "湖南明瑞制药有限公司",
@@ -1020,17 +1210,21 @@
       }
     ];
 
-    const matchedProducts = [
+    const pendingProducts = [
       {
         id: "m1",
         productCode: "10005559",
         name: "氯雷他定片（百为乐）10mg*6片",
         barcode: "6939051800069",
         brand: "百为乐",
+        genericName: "氯雷他定片",
         spec: "10mg*6片",
         approvalNo: "国药准字H20060402",
         manufacturer: "万特制药（海南）有限公司",
         category: "处方药",
+        hasRed: true,
+        recent: true,
+        syncStatus: false,
         matchedConfidence: "low",
         current: { id: "mc1", name: "百为乐 氯雷他定片 10mg*6片", upc: "6939051800069", approvalNo: "国药准字H20060402", manufacturer: "万特制药（海南）有限公司", category: "甲类非处方", confidence: "low", duplicate: false, art: "blue" },
         candidates: [
@@ -1044,10 +1238,14 @@
         name: "富马酸比索洛尔片（苏莱乐）5mg*18片",
         barcode: "6950425900079",
         brand: "苏莱乐",
+        genericName: "富马酸比索洛尔片",
         spec: "5mg*18片",
         approvalNo: "国药准字H20083008",
         manufacturer: "成都苑东生物制药股份有限公司",
         category: "处方药",
+        hasRed: false,
+        recent: false,
+        syncStatus: false,
         matchedConfidence: "high",
         current: { id: "mc3", name: "苏莱乐 富马酸比索洛尔片 5mg*18片", upc: "6950425900079", approvalNo: "国药准字H20083008", manufacturer: "成都苑东生物制药股份有限公司", category: "处方药", confidence: "high", duplicate: false, art: "green" },
         candidates: [
@@ -1056,29 +1254,109 @@
       }
     ];
 
-    const PRODUCT_FIELDS = ["barcode", "brand", "name", "spec", "approvalNo", "manufacturer", "category"];
-    const initialProductValues = new Map([...unmatchedProducts, ...matchedProducts].map(product => [
+    const syncedProducts = [
+      {
+        id: "s1",
+        productCode: "80000450",
+        name: "达因 维生素AD滴剂 50g/袋",
+        barcode: "6982000822881",
+        brand: "达因",
+        genericName: "维生素AD滴剂",
+        spec: "50g/袋",
+        approvalNo: "国药准字H20010011",
+        manufacturer: "天津达仁堂京万红药业有限公司",
+        category: "非处方药",
+        hasRed: true,
+        recent: false,
+        syncStatus: true,
+        current: { id: "sc1", name: "达因 维生素AD滴剂 50g/袋", upc: "6982000822881", approvalNo: "国药准字H20010011", manufacturer: "天津达仁堂京万红药业有限公司", category: "处方药", confidence: "high", duplicate: false, art: "orange" },
+        candidates: [
+          { id: "sc1", name: "达因 维生素AD滴剂 50g/袋", upc: "6982000822881", approvalNo: "国药准字H20010011", manufacturer: "天津达仁堂京万红药业有限公司", category: "处方药", confidence: "high", duplicate: false, art: "orange", current: true },
+          { id: "sc2", name: "达因 维生素AD滴剂 30粒", upc: "6974866240105", approvalNo: "国药准字H20023370", manufacturer: "成都制药有限公司", category: "处方药", confidence: "medium", duplicate: false, art: "blue" }
+        ]
+      },
+      {
+        id: "s2",
+        productCode: "80008324",
+        name: "维生素B2片（澳善维）",
+        barcode: "6928975001089",
+        brand: "澳善维",
+        genericName: "维生素B2片",
+        spec: "5mg*30片*3板",
+        approvalNo: "国药准字H61020683",
+        manufacturer: "陕西颐生堂药业有限公司",
+        category: "非处方药",
+        hasRed: false,
+        recent: false,
+        syncStatus: true,
+        current: { id: "sc3", name: "澳善维 维生素B2片 5mg*30片*3板", upc: "6928975001089", approvalNo: "国药准字H61020683", manufacturer: "陕西颐生堂药业有限公司", category: "非处方药", confidence: "high", duplicate: false, art: "green" },
+        candidates: [
+          { id: "sc3", name: "澳善维 维生素B2片 5mg*30片*3板", upc: "6928975001089", approvalNo: "国药准字H61020683", manufacturer: "陕西颐生堂药业有限公司", category: "非处方药", confidence: "high", duplicate: false, art: "green", current: true }
+        ]
+      }
+    ];
+
+    const PRODUCT_FIELDS = ["barcode", "brand", "genericName", "name", "spec", "approvalNo", "manufacturer", "category"];
+    const allProducts = [...unmatchedProducts, ...pendingProducts, ...syncedProducts];
+    const initialProductValues = new Map(allProducts.map(product => [
       product.id,
       Object.fromEntries(PRODUCT_FIELDS.map(key => [key, product[key]]))
     ]));
 
+    const DISCLAIMER_KEY = "online-listing-disclaimer-demo-store-demo-owner-v1";
+    let disclaimerAccepted = false;
+    try {
+      disclaimerAccepted = localStorage.getItem(DISCLAIMER_KEY) === "accepted";
+    } catch (error) {
+      disclaimerAccepted = false;
+    }
+
     const state = {
       mode: "unmatched",
       keyword: "",
-      filters: { urgent: true, recent: false, drug: false, collected: false },
+      filters: { priority: false, recent: false, drug: false, collected: false, hasRed: false, noRed: false },
       selectedId: "u1",
       guide: { open: false, value: "", error: "" },
       modal: null,
       toast: "",
-      unlinked: {}
+      unlinked: {},
+      pendingSelected: new Set(),
+      counts: { unmatched: 401, pending: 34, synced: 13 },
+      disclaimer: { open: !disclaimerAccepted, initial: !disclaimerAccepted, seconds: disclaimerAccepted ? 0 : 5 },
+      tutorial: { open: false, step: 0 }
     };
 
-    const filterLabels = {
-      urgent: "尽快确认！",
+    const unmatchedFilterLabels = {
+      priority: "优先确认！",
       recent: "近期入库",
       drug: "只看药品",
       collected: "已收录upc"
     };
+
+    const pendingFilterLabels = {
+      hasRed: "有标红",
+      noRed: "无标红",
+      recent: "近期入库"
+    };
+
+    const statusHints = {
+      unmatched: "不匹配上架不了外卖平台，点亮【优先确认】从首条依次匹配",
+      pending: "自动匹配还需您过目核准，务必确认无误后再同步上架外卖平台",
+      synced: "2411品种正在同步中，其中1122有可销库存可上架外卖平台"
+    };
+
+    const tutorialSteps = [
+      { mode: "unmatched", focus: ".search", copy: "如果您想看店内某商品的匹配情况，可以输入商品编码或者关键词搜索！" },
+      { mode: "unmatched", focus: "#filter-priority", copy: "点一下【优先确认】标签，系统已帮您找到优先确认的商品，您可以快速确认后同步至外卖平台" },
+      { mode: "unmatched", focus: "#queueList", copy: "从第一个商品开始手动匹配，点击开始吧！" },
+      { mode: "unmatched", focus: ".form-grid", copy: "核对掌店易的商品资料，为您匹配合适的一条外卖商品，所以请务必要维护完善且准确" },
+      { mode: "unmatched", focus: "#candidatePanel", copy: "点击与实物相同的商品完成匹配并同步至外卖平台" },
+      { mode: "pending", focus: "#filter-hasRed", copy: "点亮【有标红】，这些商品和外卖平台的资料存在差异，请重点核准是否同一个商品" },
+      { mode: "pending", focus: "#queueList", copy: "检查实物和外卖商品是否一致，核准无误点击【同步此商品到外卖平台】" },
+      { mode: "pending", focus: "#listActions", copy: "点击【一键同步勾选项到外卖平台】将您勾选无误的商品同步到外卖平台" },
+      { mode: "synced", focus: "#queueList", copy: "【我的商品】是掌店易商品资料，【外卖商品】是外卖平台商品资料。如果发现匹配不正确，您同样可以点击进去重新匹配" },
+      { mode: "synced", focus: "#candidateHeader", copy: "如果不认可【当前关联】，您可以点击【解除当前关联】下架商品，或者点击其他外卖商品重新上架" }
+    ];
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -1091,11 +1369,11 @@
     }
 
     function confidenceLabel(candidate) {
-      if (candidate.duplicate) return ["疑似重复", "blue"];
       if (candidate.current) return ["当前关联", "blue"];
-      if (candidate.confidence === "high") return ["高置信度", "blue"];
-      if (candidate.confidence === "medium") return ["中置信度", "amber"];
-      return [`低置信度${candidate.confidencePercent || ""}`, ""];
+      if (candidate.duplicate) return ["疑似重复", "blue"];
+      if (candidate.confidence === "high") return ["高度相似", "blue"];
+      if (candidate.confidence === "medium") return ["中等相似", "blue"];
+      return ["略微相似", ""];
     }
 
     function candidateTagHtml(candidate) {
@@ -1119,20 +1397,39 @@
     }
 
     function getProducts() {
-      return state.mode === "unmatched" ? unmatchedProducts : matchedProducts;
+      if (state.mode === "pending") return pendingProducts;
+      if (state.mode === "synced") return syncedProducts;
+      return unmatchedProducts;
     }
 
     function getFilteredProducts() {
       let list = [...getProducts()];
       const keyword = state.keyword.trim().toLowerCase();
       if (state.mode === "unmatched") {
-        if (state.filters.urgent) list = list.filter(item => item.autoLabel === "urgent");
+        if (state.filters.priority) list = list.filter(item => item.autoLabel === "urgent");
         if (state.filters.recent) list = list.filter(item => item.recent);
         if (state.filters.drug) list = list.filter(item => item.drug);
         if (state.filters.collected) list = list.filter(item => item.collected);
       }
+      if (state.mode === "pending") {
+        if (state.filters.hasRed) list = list.filter(item => item.hasRed);
+        if (state.filters.noRed) list = list.filter(item => !item.hasRed);
+        if (state.filters.recent) list = list.filter(item => item.recent);
+      }
       if (keyword) {
-        list = list.filter(item => [item.productCode, item.name, item.barcode, item.manufacturer, item.brand]
+        list = list.filter(item => [
+          item.productCode,
+          item.name,
+          item.barcode,
+          item.manufacturer,
+          item.brand,
+          item.genericName,
+          item.current && item.current.name,
+          item.current && item.current.upc,
+          item.current && item.current.approvalNo,
+          item.current && item.current.manufacturer,
+          item.current && item.current.category
+        ]
           .some(value => String(value || "").toLowerCase().includes(keyword)));
       }
       return list;
@@ -1173,32 +1470,48 @@
       renderCandidates();
       renderDrawer();
       renderModal();
+      renderAgreement();
+      renderTutorial();
       renderToast();
       const searchInput = document.getElementById("searchInput");
       if (searchInput && searchInput.value !== state.keyword) searchInput.value = state.keyword;
     }
 
     function renderTabs() {
-      document.getElementById("tabUnmatched").classList.toggle("active", state.mode === "unmatched");
-      document.getElementById("tabMatched").classList.toggle("active", state.mode === "matched");
+      const tabs = {
+        unmatched: document.getElementById("tabUnmatched"),
+        pending: document.getElementById("tabPending"),
+        synced: document.getElementById("tabSynced")
+      };
+      tabs.unmatched.textContent = `未匹配 ${state.counts.unmatched}`;
+      tabs.pending.textContent = `待同步 ${state.counts.pending}`;
+      tabs.synced.textContent = `已同步 ${state.counts.synced}`;
+      Object.entries(tabs).forEach(([mode, element]) => element.classList.toggle("active", state.mode === mode));
+      document.getElementById("statusHint").textContent = statusHints[state.mode];
     }
 
     function renderFilters() {
       const root = document.getElementById("filters");
-      if (state.mode !== "unmatched") {
+      const labels = state.mode === "unmatched"
+        ? unmatchedFilterLabels
+        : state.mode === "pending"
+          ? pendingFilterLabels
+          : null;
+      if (!labels) {
         root.innerHTML = "";
         return;
       }
-      root.innerHTML = Object.entries(filterLabels).map(([key, label]) => {
+      root.innerHTML = Object.entries(labels).map(([key, label]) => {
         const active = state.filters[key] ? " active" : "";
         const check = state.filters[key] ? '<svg class="icon" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>' : "";
-        return `<button class="filter-btn${active}" type="button" onclick="toggleFilter('${key}')">${check}${label}</button>`;
+        return `<button id="filter-${key}" class="filter-btn${active}" type="button" onclick="toggleFilter('${key}')">${check}${label}</button>`;
       }).join("");
     }
 
     function renderQueue() {
       const list = getFilteredProducts();
       const selected = getSelected();
+      const listActions = document.getElementById("listActions");
 
       if (!list.length) {
         document.getElementById("queueList").innerHTML = `
@@ -1208,33 +1521,50 @@
               <button class="btn" type="button" onclick="clearFilters()">清空筛选</button>
             </div>
           </div>`;
+        listActions.innerHTML = "";
         return;
       }
 
       document.getElementById("queueList").innerHTML = list.map(item => {
         const active = selected && selected.id === item.id ? " active" : "";
-        if (state.mode === "matched") {
+        if (state.mode !== "unmatched") {
           const current = state.unlinked[item.id] ? null : item.current;
+          const hasDifference = item.hasRed && current;
+          const syncTag = state.mode === "pending"
+            ? '<span class="tag red">库存未同步</span>'
+            : '<span class="tag blue">库存同步中</span>';
+          const pendingAction = state.mode === "pending"
+            ? `<div class="sync-row">
+                <button class="sync-choice${state.pendingSelected.has(item.id) ? " active" : ""}" type="button" onclick="event.stopPropagation(); togglePendingSelection('${item.id}')">先勾选再一键同步</button>
+                <button class="btn primary" type="button" onclick="event.stopPropagation(); syncSingle('${item.id}')">同步此商品到外卖平台</button>
+              </div>`
+            : "";
           return `
-            <button class="queue-item${active}" type="button" onclick="selectProduct('${item.id}')">
+            <article class="queue-item paired${active}" onclick="selectProduct('${item.id}')">
               <div class="queue-compare">
                 <div class="queue-compare-row">
                   <div class="queue-label-block">我的<br />商品</div>
                   <div>
-                    <div class="code">${escapeHTML(item.productCode)}</div>
-                    <div class="item-name">${escapeHTML(item.name)}</div>
+                    <div class="queue-pair-name">
+                      <span class="tag blue">${escapeHTML(item.productCode)}</span>
+                      <div class="item-name">${escapeHTML(item.name)}</div>
+                    </div>
                     <div class="item-meta">${escapeHTML(item.barcode)} / ${escapeHTML(item.approvalNo)} / ${escapeHTML(item.manufacturer)} / ${escapeHTML(item.category)}</div>
                   </div>
                 </div>
                 <div class="queue-compare-row">
                   <div class="queue-label-block takeout">外卖<br />商品</div>
                   <div>
-                    <div class="item-name">${escapeHTML(current ? current.name : "-")}</div>
-                    <div class="item-meta">${escapeHTML(current ? current.upc : "-")} / ${escapeHTML(current ? current.approvalNo : "-")} / ${escapeHTML(current ? current.manufacturer : "-")} / <span class="${current && current.category !== item.category ? 'diff' : ''}">${escapeHTML(current ? current.category : "-")}</span></div>
+                    <div class="queue-pair-name">
+                      ${syncTag}
+                      <div class="item-name">${escapeHTML(current ? current.name : "-")}</div>
+                    </div>
+                    <div class="item-meta"><span class="${hasDifference ? 'diff' : ''}">${escapeHTML(current ? current.upc : "-")}</span> / <span class="${hasDifference ? 'diff' : ''}">${escapeHTML(current ? current.approvalNo : "-")}</span> / ${escapeHTML(current ? current.manufacturer : "-")} / <span class="${current && current.category !== item.category ? 'diff' : ''}">${escapeHTML(current ? current.category : "-")}</span></div>
                   </div>
                 </div>
               </div>
-            </button>`;
+              ${pendingAction}
+            </article>`;
         }
         return `
           <button class="queue-item${active}" type="button" onclick="selectProduct('${item.id}')">
@@ -1245,6 +1575,18 @@
             <div class="item-meta">${escapeHTML(item.spec)} / ${escapeHTML(item.manufacturer)} / ${escapeHTML(item.approvalNo)}</div>
           </button>`;
       }).join("");
+
+      if (state.mode === "pending") {
+        const visibleIds = list.map(item => item.id);
+        const allSelected = visibleIds.length > 0 && visibleIds.every(id => state.pendingSelected.has(id));
+        listActions.className = "list-actions";
+        listActions.innerHTML = `
+          <button class="sync-choice${allSelected ? " active" : ""}" type="button" onclick="toggleAllPending()">全部勾选</button>
+          <button class="btn primary" type="button" onclick="syncSelected()" ${state.pendingSelected.size ? "" : "disabled"}>一键同步勾选项到外卖平台</button>`;
+      } else {
+        listActions.className = "";
+        listActions.innerHTML = "";
+      }
     }
 
     function renderDetail() {
@@ -1261,7 +1603,6 @@
 
       document.getElementById("detailPanel").innerHTML = `
         <div class="detail-hero">
-          <button class="btn ghost" type="button" onclick="saveDetail()">保存后返回</button>
           <div class="detail-code">
             <strong>当前商品:${escapeHTML(product.productCode)}</strong>
           </div>
@@ -1274,6 +1615,7 @@
         <div class="hint-line">请填入美团后台可找到的upc，<button type="button" onclick="openUpcGuide()">点击这里查看详细指南</button></div>
         <div class="form-grid">
           ${fieldHtml("brand", "品牌名称", product.brand, false)}
+          ${fieldHtml("genericName", "通用名", product.genericName, false)}
           ${fieldHtml("name", "商品名称", product.name, true)}
           ${fieldHtml("spec", "商品规格", product.spec, true)}
           ${fieldHtml("approvalNo", "批准文号", product.approvalNo, true)}
@@ -1326,7 +1668,7 @@
       const skipAction = state.mode === "unmatched" && !isLastInSequence()
         ? '<button class="btn ghost" type="button" onclick="skipNext()">找不到，先看下一条</button>'
         : "";
-      const unlinkAction = state.mode === "matched" && !state.unlinked[product.id]
+      const unlinkAction = state.mode !== "unmatched" && !state.unlinked[product.id]
         ? '<button class="btn ghost" type="button" onclick="openUnlinkConfirm()">解除当前关联</button>'
         : "";
       header.innerHTML = `
@@ -1407,8 +1749,7 @@
       }
       if (state.modal.type === "success") {
         const candidate = state.modal.candidate;
-        const [label] = confidenceLabel(candidate);
-        const primaryText = isLastInSequence() ? "确定关联" : "没问题，下一条";
+        const primaryText = isLastInSequence() ? "匹配并同步" : "匹配并同步，下一条";
         root.innerHTML = `
           <div class="modal-backdrop">
             <section class="dialog" role="dialog" aria-modal="true">
@@ -1419,7 +1760,7 @@
                 </button>
               </div>
               <div class="dialog-body">
-                <p class="dialog-copy">为您找到一条${label}标品！</p>
+                <p class="dialog-copy">为您找到一条高相似度的外卖商品！点击【${primaryText}】当前商品将同步至外卖平台${isLastInSequence() ? "" : "，并自动跳转至下一条"}</p>
                 <div class="dialog-art">
                   <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
                   <div>
@@ -1441,7 +1782,7 @@
       if (state.modal.type === "confirmLink") {
         const product = state.modal.product;
         const candidate = state.modal.candidate;
-        const primaryText = isLastInSequence() ? "确定关联" : "没问题，下一条";
+        const primaryText = isLastInSequence() ? "匹配并同步" : "匹配并同步，下一条";
         const duplicateCode = candidate.duplicateProductCode || "80000002";
         root.innerHTML = `
           <div class="modal-backdrop">
@@ -1453,7 +1794,9 @@
                 </button>
               </div>
               <div class="dialog-body">
-                ${candidate.duplicate ? `<p class="dialog-copy">当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong> 与 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong> 匹配了同一个公共库标品，点击【${primaryText}】将冻结当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong>，并将库存合并至 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong></p>` : ""}
+                ${candidate.duplicate
+                  ? `<p class="dialog-copy">当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong> 与 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong> 匹配了同一个外卖商品，点击【${primaryText}】将冻结当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong>，并将库存合并至 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong></p>`
+                  : `<p class="dialog-copy">请确保实物与此外卖商品相同，点击【${primaryText}】当前商品将同步至外卖平台${isLastInSequence() ? "" : "，并自动跳转至下一条"}</p>`}
                 <div class="dialog-art">
                   <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
                   <div>
@@ -1483,7 +1826,7 @@
                 </button>
               </div>
               <div class="dialog-body">
-                <p class="dialog-copy">您的upc <strong style="color: var(--blue)">${escapeHTML(state.modal.upc)}</strong> 已被收录，您可以在【未匹配（不可上架）-已收录upc】中找到，核实确为有效美团标品upc后，我们将在1~5个工作日内为您自动关联并上架。</p>
+                <p class="dialog-copy">您的upc <strong style="color: var(--blue)">${escapeHTML(state.modal.upc)}</strong> 已被收录，您可以在【未匹配-已收录upc】中找到，核实确为有效美团标品upc后，我们将在1~5个工作日内为您自动关联并上架。</p>
               </div>
               <div class="dialog-footer">
                 <button class="btn primary" type="button" onclick="closeModal()">确定</button>
@@ -1525,7 +1868,11 @@
       if (state.modal.type === "rematch") {
         const product = getSelected();
         const candidate = state.modal.candidate;
-        const title = candidate.duplicate ? "重新匹配为重复商品" : "确定重新匹配？";
+        const title = candidate.duplicate
+          ? "重新关联为重复商品"
+          : state.modal.source === "auto"
+            ? "匹配到其他标品，确定重新关联？"
+            : "确定重新关联？";
         const duplicateCode = candidate.duplicateProductCode || "80000002";
         root.innerHTML = `
           <div class="modal-backdrop">
@@ -1537,7 +1884,7 @@
                 </button>
               </div>
               <div class="dialog-body">
-                <p class="dialog-copy">${candidate.duplicate && product ? `1. 当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong> 与 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong> 匹配了同一个公共库标品，点击重新匹配将冻结当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong>，并将库存合并至 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong><br />2. ` : ""}点击重新匹配，当前商品库存将转移到其他公共库标品，可能涉及到美团后台上下架，请谨慎操作！</p>
+                <p class="dialog-copy">${candidate.duplicate && product ? `1. 当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong> 与 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong> 匹配了同一个外卖商品，点击【重新匹配并同步】将冻结当前商品 <strong style="color: var(--blue)">${escapeHTML(product.productCode)}</strong>，并将库存合并至 <strong style="color: var(--blue)">${escapeHTML(duplicateCode)}</strong><br />2. ` : ""}点击【重新匹配并同步】，当前商品库存将转移到其他外卖商品，可能涉及到外卖后台上下架，请谨慎操作！</p>
                 <div class="dialog-art">
                   <div class="product-art ${candidate.art === "blue" ? "blue-art" : candidate.art === "green" ? "green-art" : ""}" aria-hidden="true"></div>
                   <div>
@@ -1548,7 +1895,7 @@
                 </div>
               </div>
               <div class="dialog-footer">
-                <button class="btn" type="button" onclick="confirmRematch()">重新匹配</button>
+                <button class="btn" type="button" onclick="confirmRematch()">重新匹配并同步</button>
                 <button class="btn primary" type="button" onclick="closeModal()">我再看看</button>
               </div>
             </section>
@@ -1578,6 +1925,52 @@
       }
     }
 
+    let disclaimerTimer = null;
+
+    function renderAgreement() {
+      const root = document.getElementById("agreementRoot");
+      if (!state.disclaimer.open) {
+        root.innerHTML = "";
+        return;
+      }
+      const initialActions = state.disclaimer.initial
+        ? '<button class="btn" type="button" onclick="rejectDisclaimer()">不接受，退出页面</button>'
+        : "";
+      root.innerHTML = `
+        <div class="agreement-backdrop">
+          <section class="agreement-dialog" role="dialog" aria-modal="true" aria-label="免责声明">
+            <div class="dialog-header">
+              <h2 class="dialog-title">免责声明</h2>
+            </div>
+            <div class="agreement-copy">我是免责声明</div>
+            <div class="dialog-footer">
+              ${initialActions}
+              <button class="btn primary" type="button" onclick="acceptDisclaimer()" ${state.disclaimer.seconds > 0 ? "disabled" : ""}>已阅读并接受</button>
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function renderTutorial() {
+      document.querySelectorAll(".tutorial-focus").forEach(element => element.classList.remove("tutorial-focus"));
+      const root = document.getElementById("tutorialRoot");
+      const button = document.getElementById("tutorialButton");
+      if (button) button.textContent = state.tutorial.open ? "退出引导" : "查看教程";
+      if (!state.tutorial.open) {
+        root.innerHTML = "";
+        return;
+      }
+      const step = tutorialSteps[state.tutorial.step];
+      const target = document.querySelector(step.focus);
+      if (target) target.classList.add("tutorial-focus");
+      root.innerHTML = `
+        <div class="tutorial-backdrop"></div>
+        <div class="tutorial-card" role="dialog" aria-modal="true">
+          <p class="tutorial-copy">${escapeHTML(step.copy)}</p>
+          <button class="btn primary" type="button" onclick="nextTutorialStep()">我知道了</button>
+        </div>`;
+    }
+
     function renderToast() {
       document.getElementById("toastRoot").innerHTML = "";
     }
@@ -1585,7 +1978,8 @@
     function setMode(mode) {
       state.mode = mode;
       state.keyword = "";
-      state.selectedId = mode === "unmatched" ? "u1" : "m1";
+      const first = getProducts()[0];
+      state.selectedId = first ? first.id : "";
       state.modal = null;
       render();
     }
@@ -1597,12 +1991,55 @@
 
     function toggleFilter(key) {
       state.filters[key] = !state.filters[key];
+      if (key === "hasRed" && state.filters.hasRed) state.filters.noRed = false;
+      if (key === "noRed" && state.filters.noRed) state.filters.hasRed = false;
       render();
     }
 
     function clearFilters() {
       state.keyword = "";
-      state.filters = { urgent: false, recent: false, drug: false, collected: false };
+      state.filters = { priority: false, recent: false, drug: false, collected: false, hasRed: false, noRed: false };
+      render();
+    }
+
+    function togglePendingSelection(id) {
+      if (state.pendingSelected.has(id)) state.pendingSelected.delete(id);
+      else state.pendingSelected.add(id);
+      render();
+    }
+
+    function toggleAllPending() {
+      const visibleIds = getFilteredProducts().map(item => item.id);
+      const allSelected = visibleIds.length > 0 && visibleIds.every(id => state.pendingSelected.has(id));
+      visibleIds.forEach(id => {
+        if (allSelected) state.pendingSelected.delete(id);
+        else state.pendingSelected.add(id);
+      });
+      render();
+    }
+
+    function movePendingToSynced(id) {
+      const index = pendingProducts.findIndex(item => item.id === id);
+      if (index < 0) return;
+      const [product] = pendingProducts.splice(index, 1);
+      product.syncStatus = true;
+      syncedProducts.unshift(product);
+      state.pendingSelected.delete(id);
+      state.counts.pending = Math.max(0, state.counts.pending - 1);
+      state.counts.synced += 1;
+    }
+
+    function syncSingle(id) {
+      movePendingToSynced(id);
+      const next = pendingProducts[0];
+      state.selectedId = next ? next.id : "";
+      render();
+    }
+
+    function syncSelected() {
+      [...state.pendingSelected].forEach(movePendingToSynced);
+      const next = pendingProducts[0];
+      state.selectedId = next ? next.id : "";
       render();
     }
 
@@ -1634,10 +2071,6 @@
       const product = getSelected();
       if (!product) return;
       resetProduct(product);
-    }
-
-    function saveDetail() {
-      return;
     }
 
     function openUpcGuide() {
@@ -1693,7 +2126,7 @@
         state.modal = { type: "comfort", upc: product.barcode };
       } else {
         const candidate = product.candidates.find(item => !item.current) || product.candidates[0] || { id: "generated", name: `${product.name} 外卖标品`, upc: product.barcode, approvalNo: product.approvalNo, manufacturer: product.manufacturer, category: product.category, confidence: "high", duplicate: false, art: "green" };
-        state.modal = { type: state.mode === "matched" ? "rematch" : "success", candidate };
+        state.modal = { type: state.mode === "unmatched" ? "success" : "rematch", candidate, source: "auto" };
       }
       render();
     }
@@ -1702,8 +2135,8 @@
       const product = getSelected();
       if (!product) return;
       const candidate = product.candidates.find(item => item.id === candidateId) || product.current;
-      if (state.mode === "matched") {
-        state.modal = { type: candidate.current ? "current" : "rematch", candidate };
+      if (state.mode !== "unmatched") {
+        state.modal = { type: candidate.current ? "current" : "rematch", candidate, source: "candidate" };
         render();
         return;
       }
@@ -1717,14 +2150,51 @@
     }
 
     function confirmMatch() {
+      const product = getSelected();
+      const candidate = state.modal && state.modal.candidate;
+      const list = getFilteredProducts();
+      const index = sequenceIndex();
+      const nextId = index >= 0 && index < list.length - 1 ? list[index + 1].id : "";
       const last = isLastInSequence();
       state.modal = null;
-      if (!last) selectNextProduct();
+      if (state.mode === "unmatched" && product && candidate) {
+        const sourceIndex = unmatchedProducts.findIndex(item => item.id === product.id);
+        if (sourceIndex >= 0) unmatchedProducts.splice(sourceIndex, 1);
+        product.current = { ...candidate, current: true };
+        product.candidates = product.candidates.some(item => item.id === candidate.id)
+          ? product.candidates.map(item => ({ ...item, current: item.id === candidate.id }))
+          : [{ ...candidate, current: true }, ...product.candidates.map(item => ({ ...item, current: false }))];
+        product.syncStatus = true;
+        product.hasRed = false;
+        syncedProducts.unshift(product);
+        state.counts.unmatched = Math.max(0, state.counts.unmatched - 1);
+        state.counts.synced += 1;
+        if (!last && nextId) state.selectedId = nextId;
+        else if (unmatchedProducts.length) state.selectedId = unmatchedProducts[0].id;
+        else {
+          state.mode = "synced";
+          state.selectedId = product.id;
+        }
+      } else if (!last) {
+        selectNextProduct();
+      }
       render();
     }
 
     function confirmRematch() {
+      const product = getSelected();
+      const candidate = state.modal && state.modal.candidate;
+      if (product && candidate) {
+        product.current = { ...candidate, current: true };
+        product.candidates = product.candidates.some(item => item.id === candidate.id)
+          ? product.candidates.map(item => ({ ...item, current: item.id === candidate.id }))
+          : [{ ...candidate, current: true }, ...product.candidates.map(item => ({ ...item, current: false }))];
+      }
       state.modal = null;
+      if (state.mode === "pending" && product) {
+        movePendingToSynced(product.id);
+        state.selectedId = pendingProducts[0] ? pendingProducts[0].id : "";
+      }
       render();
     }
 
@@ -1750,9 +2220,87 @@
       const product = getSelected();
       if (product) {
         state.unlinked[product.id] = true;
+        const source = state.mode === "pending" ? pendingProducts : syncedProducts;
+        const sourceIndex = source.findIndex(item => item.id === product.id);
+        if (sourceIndex >= 0) source.splice(sourceIndex, 1);
+        if (state.mode === "pending") state.counts.pending = Math.max(0, state.counts.pending - 1);
+        if (state.mode === "synced") state.counts.synced = Math.max(0, state.counts.synced - 1);
+        product.current = null;
+        product.candidates = product.candidates.map(item => ({ ...item, current: false }));
+        product.autoLabel = "ignore";
+        unmatchedProducts.unshift(product);
+        state.counts.unmatched += 1;
+        state.mode = "unmatched";
+        state.selectedId = product.id;
       }
       state.modal = null;
       render();
+    }
+
+    function openDisclaimer() {
+      state.disclaimer = { open: true, initial: false, seconds: 0 };
+      render();
+    }
+
+    function acceptDisclaimer() {
+      if (state.disclaimer.seconds > 0) return;
+      try {
+        localStorage.setItem(DISCLAIMER_KEY, "accepted");
+      } catch (error) {
+        // The demo still proceeds when local storage is unavailable.
+      }
+      state.disclaimer.open = false;
+      state.disclaimer.initial = false;
+      if (disclaimerTimer) clearInterval(disclaimerTimer);
+      disclaimerTimer = null;
+      render();
+    }
+
+    function rejectDisclaimer() {
+      window.history.back();
+    }
+
+    function startDisclaimerCountdown() {
+      if (!state.disclaimer.open || !state.disclaimer.initial || state.disclaimer.seconds <= 0 || disclaimerTimer) return;
+      disclaimerTimer = window.setInterval(() => {
+        state.disclaimer.seconds = Math.max(0, state.disclaimer.seconds - 1);
+        renderAgreement();
+        if (state.disclaimer.seconds === 0) {
+          clearInterval(disclaimerTimer);
+          disclaimerTimer = null;
+        }
+      }, 1000);
+    }
+
+    function toggleTutorial() {
+      if (state.tutorial.open) {
+        state.tutorial.open = false;
+        render();
+        return;
+      }
+      state.tutorial = { open: true, step: 0 };
+      applyTutorialStep();
+    }
+
+    function applyTutorialStep() {
+      const step = tutorialSteps[state.tutorial.step];
+      state.mode = step.mode;
+      state.keyword = "";
+      if (step.mode === "pending" && state.tutorial.step >= 6) state.filters.hasRed = true;
+      const first = getProducts()[0];
+      state.selectedId = first ? first.id : "";
+      state.modal = null;
+      render();
+    }
+
+    function nextTutorialStep() {
+      if (state.tutorial.step >= tutorialSteps.length - 1) {
+        state.tutorial.open = false;
+        render();
+        return;
+      }
+      state.tutorial.step += 1;
+      applyTutorialStep();
     }
 
     function runSync() {
@@ -1765,6 +2313,7 @@
     }
 
     render();
+    startDisclaimerCountdown();
   </script>
 </body>
 </html>
